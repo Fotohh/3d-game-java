@@ -12,6 +12,8 @@ import java.io.Serial;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import static me.fotohh.javagame.log.Logger.*;
+
 public class Display extends Canvas implements Runnable{
 
     @Serial
@@ -60,7 +62,7 @@ public class Display extends Canvas implements Runnable{
             thread.join();
         } catch (InterruptedException e) {
 
-            //l.severe("Encountered an error stopping the game!");
+            severe("Encountered an error stopping the game!");
             e.printStackTrace();
             System.exit(0);
         }
@@ -89,7 +91,7 @@ public class Display extends Canvas implements Runnable{
             frames++;
             if(System.currentTimeMillis() - timer > 1000){
                 timer += 1000;
-                //info(STR."FPS: \{frames}" );
+                info("FPS: "+frames );
                 frames = 0;
             }
 

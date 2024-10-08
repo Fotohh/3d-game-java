@@ -7,14 +7,6 @@ import java.util.Map;
 
 public final class Logger {
 
-    public void main() {
-        info("Hello World");
-        severe("Hello World");
-        warn("Hello World");
-        lethal("Hello World");
-        debug("Hello World");
-    }
-
     public static final char COLOR_SYMBOL = '&';
 
     public static void clearScreen(){
@@ -26,10 +18,7 @@ public final class Logger {
         AnsiConsole.systemInstall();
 
         String msg = parseString(message);
-        System.out.println(msg);
         String a = Ansi.ansi().render(msg).toString();
-
-        System.out.println(msg);
 
         Ansi n = null;
         if(a.contains("@|") && a.contains("|@")) {
@@ -40,7 +29,7 @@ public final class Logger {
         }
         if(n != null) a = n.toString();
 
-        System.out.println(a + "\n\n\n\n");
+        System.out.println(a);
 
         AnsiConsole.systemUninstall();
     }
