@@ -27,13 +27,16 @@ public final class Logger {
 
         String msg = parseString(message);
         String a = Ansi.ansi().render(msg).toString();
+
+        System.out.println(msg);
+
         Ansi n = null;
-        if(a.contains("|@") && a.contains("|@")) {
+        if(a.contains("@|") && a.contains("|@")) {
             n = Ansi.ansi().render(a);
         }
         if(n != null) a = n.toString();
 
-        System.out.println(a);
+        System.out.println(a + "\n\n\n\n");
 
         AnsiConsole.systemUninstall();
     }
@@ -43,6 +46,7 @@ public final class Logger {
         int size = builder.length();
         boolean searching = false;
         boolean bold = false;
+        String recentSymbol = null;
 
         for(int i = 0; i < size; i++){
 
@@ -57,17 +61,22 @@ public final class Logger {
                 String colorSymbol = keys.getOrDefault(currentChar, null);
                 if(colorSymbol == null) continue;
 
-                if(currentChar.equals("l")) bold = true;
-
                 if(bold && colorSymbol.equals("reset")) {
                     bold = false;
+                    if(!recentSymbol.equals("bold")) builder.insert(i, "|@");
                     builder.insert(i, "|@");
+                    searching = false;
                     continue;
                 }
                 if(searching){
                     if(!bold) {
                         builder.insert(i, "|@");
+                        searching = false;
                         continue;
+                    }
+                    if(!recentSymbol.equals("bold")) {
+                        builder.insert(i, "|@");
+                        searching = false; continue;
                     }
                     searching = false;
                 }
@@ -82,6 +91,8 @@ public final class Logger {
                         builder.insert(i + 2, colorSymbol + " ");
                     }
                     size = builder.length();
+                    if(currentChar.equals("l")) bold = true;
+                    recentSymbol = colorSymbol;
                 }
                 continue;
             }
@@ -116,7 +127,7 @@ public final class Logger {
     }
 
     public static void severe(String message){
-        print("&e[&l&4SEVERE&e]&r  "+message);
+        print("&e[&l&4SEVERE&r&e]&r  "+message);
     }
 
     public static void warn(String message){
@@ -128,7 +139,7 @@ public final class Logger {
     }
 
     public static void lethal(String message){
-        print("&4[&lLETHAL&4]&r  "+message);
+        print("&4[&lLETHAL&r&4]&r  "+message);
     }
 
 }
