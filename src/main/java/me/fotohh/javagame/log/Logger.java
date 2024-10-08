@@ -8,12 +8,11 @@ import java.util.Map;
 public final class Logger {
 
     public void main() {
-        print("&l&4 Hello World!");
-        /*info("Hello World");
+        info("Hello World");
         severe("Hello World");
         warn("Hello World");
         lethal("Hello World");
-        debug("Hello World");*/
+        debug("Hello World");
     }
 
     public static final char COLOR_SYMBOL = '&';
@@ -28,9 +27,13 @@ public final class Logger {
 
         String msg = parseString(message);
         String a = Ansi.ansi().render(msg).toString();
-        Ansi n = Ansi.ansi().render(a);
+        Ansi n = null;
+        if(a.contains("|@") && a.contains("|@")) {
+            n = Ansi.ansi().render(a);
+        }
+        if(n != null) a = n.toString();
 
-        System.out.println(n);
+        System.out.println(a);
 
         AnsiConsole.systemUninstall();
     }
@@ -91,7 +94,7 @@ public final class Logger {
             }
 
         }
-        
+
         return builder.toString();
     }
 
