@@ -26,6 +26,7 @@ public final class Logger {
         AnsiConsole.systemInstall();
 
         String msg = parseString(message);
+        System.out.println(msg);
         String a = Ansi.ansi().render(msg).toString();
 
         System.out.println(msg);
@@ -33,6 +34,9 @@ public final class Logger {
         Ansi n = null;
         if(a.contains("@|") && a.contains("|@")) {
             n = Ansi.ansi().render(a);
+            while(n.toString().contains("@|") && n.toString().contains("|@")){
+                n = Ansi.ansi().render(n.toString());
+            }
         }
         if(n != null) a = n.toString();
 
@@ -46,6 +50,7 @@ public final class Logger {
         int size = builder.length();
         boolean searching = false;
         boolean bold = false;
+        int boldCount = 0;
         String recentSymbol = null;
 
         for(int i = 0; i < size; i++){
@@ -63,6 +68,7 @@ public final class Logger {
 
                 if(bold && colorSymbol.equals("reset")) {
                     bold = false;
+                    boldCount--;
                     if(!recentSymbol.equals("bold")) builder.insert(i, "|@");
                     builder.insert(i, "|@");
                     searching = false;
@@ -93,6 +99,9 @@ public final class Logger {
                     size = builder.length();
                     if(currentChar.equals("l")) bold = true;
                     recentSymbol = colorSymbol;
+                    if(colorSymbol.equals("bold")){
+                        boldCount ++;
+                    }
                 }
                 continue;
             }
@@ -101,7 +110,17 @@ public final class Logger {
                 builder.insert(builder.length(), "|@");
             }
             if(i == size-1){
-                if(bold) builder.insert(builder.length(), "|@");
+                if(boldCount > 0){
+                    char c1 = builder.charAt(builder.length()-1);
+                    char c2 = builder.charAt(builder.length()-2);
+                    if(c1 == '@' && c2 == '|'){
+                        boldCount--;
+                    }
+                    while(boldCount > 0) {
+                        builder.insert(builder.length(), "|@");
+                        boldCount--;
+                    }
+                }
             }
 
         }
