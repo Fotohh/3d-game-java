@@ -7,15 +7,17 @@ import java.util.Map;
 
 public final class Logger {
 
+    static {
+        AnsiConsole.systemInstall();
+    }
+
     public static final char COLOR_SYMBOL = '&';
 
     public static void clearScreen(){
         Ansi.ansi().eraseScreen();
     }
 
-    public static void print(String message){
-
-        AnsiConsole.systemInstall();
+    public synchronized static void print(String message){
 
         String msg = parseString(message);
         String a = Ansi.ansi().render(msg).toString();
@@ -31,10 +33,9 @@ public final class Logger {
 
         System.out.println(a);
 
-        AnsiConsole.systemUninstall();
     }
 
-    private static String parseString(String s){
+    private synchronized static String parseString(String s){
         final StringBuilder builder = new StringBuilder(s);
         int size = builder.length();
         boolean searching = false;

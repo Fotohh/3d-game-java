@@ -19,9 +19,10 @@ public class Render {
             for(int x = 0; x < render.width; x++){
                 int xPixel = x+xOffs;
                 if(xPixel < 0 || xPixel >= width) continue;
-                int renpix = render.pixels[x + y * render.width];
-                if(renpix < 0) continue;
-                pixels[xPixel + yPixel * width] = renpix;
+                int alpha = render.pixels[x + y * render.width];
+                if(alpha > 0) {
+                    pixels[xPixel + yPixel * width] = alpha;
+                }
             }
         }
     }
