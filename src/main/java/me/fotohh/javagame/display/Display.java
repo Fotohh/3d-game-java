@@ -1,7 +1,9 @@
 package me.fotohh.javagame.display;
 
 import me.fotohh.javagame.graphics.Screen;
+import me.fotohh.javagame.input.Controller;
 import me.fotohh.javagame.input.InputHandler;
+import me.fotohh.javagame.log.Logger;
 import org.fusesource.jansi.AnsiConsole;
 
 import javax.swing.*;
@@ -29,8 +31,11 @@ public class Display extends Canvas implements Runnable{
     private boolean runnning = false;
     private final int[] pixels;
     private final InputHandler input;
+    private int newX = 0, newY = 0, oldX, oldY;
 
     public Display(){
+        BufferedImage cursor = new BufferedImage(16,16, BufferedImage.TYPE_INT_ARGB);
+        Cursor blank = Toolkit.getDefaultToolkit().createCustomCursor(cursor, new Point(0,0), "blank");
         Dimension size = new Dimension(WIDTH, HEIGHT);
         setPreferredSize(size);
         setMaximumSize(size);
@@ -49,11 +54,13 @@ public class Display extends Canvas implements Runnable{
         JFrame window = new JFrame(title);
         window.add(this);
         window.pack();
+        window.getContentPane().setCursor(blank);
         window.setTitle(title);
         window.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         window.setLocationRelativeTo(null);
         window.setResizable(false);
         window.setVisible(true);
+        window.setAutoRequestFocus(true);
 
         start();
     }
@@ -84,6 +91,8 @@ public class Display extends Canvas implements Runnable{
         AnsiConsole.systemUninstall();
     }
 
+    private int final_fps = 0;
+
     @Override
     public void run() {
         int frames = 0;
@@ -95,6 +104,8 @@ public class Display extends Canvas implements Runnable{
 
         while (runnning){
 
+            Logger.clearScreen();
+
             long currentTime = System.nanoTime();
             long passedTime = currentTime - previousTime;
             previousTime = currentTime;
@@ -105,8 +116,8 @@ public class Display extends Canvas implements Runnable{
                 ticked = true;
                 tickCount++;
                 if(tickCount % 60 == 0){
-                    info("FPS: " + frames);
                     previousTime += 1000;
+                    final_fps = frames;
                     frames = 0;
                 }
             }
@@ -115,7 +126,21 @@ public class Display extends Canvas implements Runnable{
                 frames++;
             }
             render();
+            frames++;
 
+            newX = InputHandler.MouseX;
+            newY = InputHandler.MouseY;
+            if(newX > oldX){
+                Controller.turnRight = true;
+            }
+            if(newX < oldX){
+                Controller.turnLeft = true;
+            }
+            if(newX == oldX){
+                Controller.turnRight = false;
+                Controller.turnLeft = false;
+            }
+            oldX = newX;
 
         }
         stop();
@@ -131,13 +156,14 @@ public class Display extends Canvas implements Runnable{
 
         screen.render(game);
 
-        for(int i = 0; i < WIDTH*HEIGHT; i++){
-            pixels[i] = screen.pixels[i];
-        }
+        System.arraycopy(screen.pixels, 0, pixels, 0, WIDTH * HEIGHT);
 
         Graphics g = bs.getDrawGraphics();
 
         g.drawImage(img, 0, 0, WIDTH, HEIGHT, null);
+        g.setFont(new Font("Verdana", Font.BOLD, 50));
+        g.setColor(Color.YELLOW);
+        g.drawString("FPS: " + final_fps, 20, 50);
 
         g.dispose();
         bs.show();

@@ -9,12 +9,16 @@ public final class Logger {
 
     static {
         AnsiConsole.systemInstall();
+        Ansi.setEnabled(true);
     }
 
     public static final char COLOR_SYMBOL = '&';
 
     public static void clearScreen(){
         Ansi.ansi().eraseScreen();
+        Ansi.ansi().eraseScreen(Ansi.Erase.ALL);
+        Ansi.ansi().eraseLine();
+        Ansi.ansi().eraseLine(Ansi.Erase.ALL);
     }
 
     public synchronized static void print(String message){

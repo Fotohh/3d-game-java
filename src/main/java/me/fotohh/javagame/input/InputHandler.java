@@ -7,6 +7,8 @@ public class InputHandler implements KeyListener, FocusListener, MouseListener, 
 
     public boolean[] key = new boolean[68836];
 
+    public static int MouseX = 0, MouseY = 0;
+
     @Override
     public void keyTyped(KeyEvent e) {
 
@@ -22,16 +24,17 @@ public class InputHandler implements KeyListener, FocusListener, MouseListener, 
 
     @Override
     public void keyReleased(KeyEvent e) {
-        Arrays.fill(key, false);
+        int keyCode = e.getKeyCode();
+        if(keyCode > 0 && keyCode < key.length){
+            key[keyCode] = false;
+        }
     }
 
     @Override
     public void focusGained(FocusEvent e) {
     }
-
-    @Override
     public void focusLost(FocusEvent e) {
-
+        Arrays.fill(key, false);
     }
 
     @Override
@@ -66,6 +69,7 @@ public class InputHandler implements KeyListener, FocusListener, MouseListener, 
 
     @Override
     public void mouseMoved(MouseEvent e) {
-
+        MouseX = e.getX();
+        MouseY = e.getY();
     }
 }

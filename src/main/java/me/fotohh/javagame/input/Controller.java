@@ -3,40 +3,42 @@ package me.fotohh.javagame.input;
 public class Controller {
 
     public double x, y, z, rotation, xa, za, rotationa;
+    public static boolean turnLeft = false;
+    public static boolean turnRight = false;
 
-    public void tick(boolean forward, boolean back, boolean left, boolean right, boolean turnLeft, boolean turnRight) {
-        double rotationSpeed = 1;
+    public void tick(boolean forward, boolean back, boolean left, boolean right, boolean jump) {
+        double rotationSpeed = 0.025;
         double walkSpeed = 1;
         double xMove = 0;
         double zMove = 0;
 
-        if(forward){
+        if (forward) {
             zMove++;
         }
-        if(back){
+        if (back) {
             zMove--;
         }
-        if(left){
+        if (left) {
+            xMove--;
+        }
+        if (right) {
             xMove++;
         }
-        if(right){
-            xMove--;
+        if (turnLeft) {
+            rotationa -= rotationSpeed;
         }
-        if(turnLeft){
-            xMove--;
-        }
-        if(turnRight){
-            xMove--;
+        if (turnRight) {
+            rotationa += rotationSpeed;
         }
 
-        xa+=(xMove * Math.cos(rotation) + zMove * Math.sin(rotation)) * walkSpeed;
-        za+=(zMove * Math.cos(rotation) + xMove * Math.sin(rotation)) * walkSpeed;
+        xa += (xMove * Math.cos(rotation) + zMove * Math.sin(rotation)) * walkSpeed;
+        za += (zMove * Math.cos(rotation) + xMove * Math.sin(rotation)) * walkSpeed;
 
-        x+=xa;
-        z+=za;
-        xa*=0.1;
-        za*=0.1;
+        x += xa;
+        z += za;
+        xa *= 0.1;
+        za *= 0.1;
         rotation += rotationa;
-        rotation *= 0.8;
+        rotation *= 0.5;
     }
 }
