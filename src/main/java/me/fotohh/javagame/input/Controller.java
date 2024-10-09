@@ -11,6 +11,7 @@ public class Controller {
         double walkSpeed = 1;
         double xMove = 0;
         double zMove = 0;
+        double yMove = 0;
 
         if (forward) {
             zMove++;
