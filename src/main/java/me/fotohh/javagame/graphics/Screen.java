@@ -2,8 +2,6 @@ package me.fotohh.javagame.graphics;
 
 import me.fotohh.javagame.display.Game;
 
-import java.util.Random;
-
 public class Screen extends Render{
 
     private final Render3D render;

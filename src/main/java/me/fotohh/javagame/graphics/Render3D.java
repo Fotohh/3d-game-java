@@ -1,6 +1,7 @@
 package me.fotohh.javagame.graphics;
 
 import me.fotohh.javagame.display.Game;
+import me.fotohh.javagame.input.Controller;
 
 public class Render3D extends Render {
 
@@ -13,38 +14,52 @@ public class Render3D extends Render {
     }
 
     public void floor(Game game) {
-
         double floorPos = 8.0;
         double ceilingPos = 800;
         double forward = game.controls.z;
         double right = game.controls.x;
-
         double rotation = game.controls.rotation;
         double cosine = Math.cos(rotation);
         double sine = Math.sin(rotation);
+        double up = game.controls.y;
+        double walking = 0;
 
-        for (int y = 0; y < height; y++) {
-            double ceiling = (y - height / 2.0) / height;
+        if (Controller.moving) {
+            double bobSpeed = Controller.bobSpeed;
+            double bobbing = Controller.bobbing;
 
-            double z = floorPos / ceiling;
-
-            if (ceiling < 0) {
-                z = ceilingPos / -ceiling;
+            if (Controller.sprinting) {
+                bobSpeed *= 0.9;
+            } else if (Controller.crouching) {
+                bobSpeed *= 1.3;
+                bobbing *= 0.8;
             }
 
+            walking = Math.sin(game.time / bobSpeed) * bobbing;
+        }
+
+        int halfWidth = width / 2;
+        int halfHeight = height / 2;
+
+        for (int y = 0; y < height; y++) {
+            double ceiling = (double) (y - halfHeight) / height;
+            double z = ceiling < 0 ? (ceilingPos - up + walking) / -ceiling : (floorPos + up - walking) / ceiling;
+
             for (int x = 0; x < width; x++) {
-                double depth = (x - width / 2.0) / height;
-                depth *= z;
+                double depth = (double) (x - halfWidth) / height * z;
                 double xx = depth * cosine + z * sine;
                 double yy = z * cosine - depth * sine;
                 int xPix = (int) (xx + right);
                 int yPix = (int) (yy + forward);
                 zBuffer[x+y*width] = z;
+
                 if (z < 400) {
                     pixels[x + y * width] = Texture.floor.pixels[(xPix & 7) + (yPix & 7) * 8];
                 }
             }
         }
+
+        pixels[width / 2 + height / 2 * width] = 0xff0000;
     }
 
     public void renderDistanceLimiter() {
@@ -52,21 +67,13 @@ public class Render3D extends Render {
             int color = pixels[i];
             int brightness = (int) (RENDER_DISTANCE / zBuffer[i]);
 
-            if (brightness < 0) {
-                brightness = 0;
-            }
-            if (brightness > 255) {
-                brightness = 255;
-            }
+            brightness = Math.max(0, Math.min(255, brightness));
 
-            int r = (color >> 16) & 0xff;
-            int g = (color >> 8) & 0xff;
-            int b = (color) & 0xff;
-            r = r * brightness / 255;
-            g = g * brightness / 255;
-            b = b * brightness / 255;
+            int r = ((color >> 16) & 0xff) * brightness / 255;
+            int g = ((color >> 8) & 0xff) * brightness / 255;
+            int b = (color & 0xff) * brightness / 255;
 
-            pixels[i] = r << 16 | g << 8 | b;
+            pixels[i] = (r << 16) | (g << 8) | b;
         }
     }
 }

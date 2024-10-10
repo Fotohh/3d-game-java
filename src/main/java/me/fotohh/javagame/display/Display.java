@@ -33,6 +33,12 @@ public class Display extends Canvas implements Runnable{
     private final InputHandler input;
     private int newX = 0, newY = 0, oldX, oldY;
 
+    private final JFrame window;
+
+    public JFrame getWindow() {
+        return window;
+    }
+
     public Display(){
         BufferedImage cursor = new BufferedImage(16,16, BufferedImage.TYPE_INT_ARGB);
         Cursor blank = Toolkit.getDefaultToolkit().createCustomCursor(cursor, new Point(0,0), "blank");
@@ -45,13 +51,13 @@ public class Display extends Canvas implements Runnable{
         img = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_RGB);
         pixels = ((DataBufferInt) img.getRaster().getDataBuffer()).getData();
 
-        input = new InputHandler();
+        input = new InputHandler(this);
         addKeyListener(input);
         addMouseListener(input);
         addMouseMotionListener(input);
         addFocusListener(input);
 
-        JFrame window = new JFrame(title);
+        window = new JFrame(title);
         window.add(this);
         window.pack();
         window.getContentPane().setCursor(blank);
@@ -101,6 +107,7 @@ public class Display extends Canvas implements Runnable{
         double secondsPerTick = (double) 1 /60;
         int tickCount = 0;
         boolean ticked = false;
+        requestFocus();
 
         while (runnning){
 
@@ -161,7 +168,7 @@ public class Display extends Canvas implements Runnable{
         Graphics g = bs.getDrawGraphics();
 
         g.drawImage(img, 0, 0, WIDTH, HEIGHT, null);
-        g.setFont(new Font("Verdana", Font.BOLD, 50));
+        g.setFont(new Font("Sevastopol Interface", Font.BOLD, 50));
         g.setColor(Color.YELLOW);
         g.drawString("FPS: " + final_fps, 20, 50);
 
