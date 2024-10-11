@@ -6,7 +6,7 @@ public class Controller {
     public static boolean turnLeft = false;
     public static boolean turnRight = false;
     public static double bobbing = 0.4;
-    public static double bobSpeed = 5.0;
+    public static double bobSpeed = 6.0;
     public static boolean sprinting = false;
     public static boolean moving = false;
     public static boolean crouching = false;

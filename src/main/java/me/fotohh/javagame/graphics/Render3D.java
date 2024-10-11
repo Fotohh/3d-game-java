@@ -5,6 +5,9 @@ import me.fotohh.javagame.input.Controller;
 
 import java.util.Random;
 
+import static me.fotohh.javagame.input.Controller.bobSpeed;
+import static me.fotohh.javagame.input.Controller.bobbing;
+
 public class Render3D extends Render {
 
     public double[] zBuffer;
@@ -28,8 +31,6 @@ public class Render3D extends Render {
         double walking = 0;
 
         if (Controller.moving) {
-            double bobSpeed = Controller.bobSpeed;
-            double bobbing = Controller.bobbing;
 
             if (Controller.sprinting) {
                 bobSpeed *= 0.9;
@@ -62,7 +63,18 @@ public class Render3D extends Render {
             }
         }
         Random random = new Random(100);
-        for (int i = 0; i < 10000; i++) {
+        for (int i = 0; i < 20000; i++) {
+            double xx = random.nextDouble() - 1;
+            double yy = random.nextDouble();
+            double zz = 2 - forward / 16;
+
+            int xPixel = (int) (xx / zz * ((double) height / 2) + ((double) width / 2));
+            int yPixel = (int) (yy / zz * ((double) height / 2) + ((double) height / 2));
+            if (xPixel >= 0 && yPixel >= 0 && xPixel < width && yPixel < height) {
+                pixels[xPixel + yPixel * width] = 0xff00ff;
+            }
+        }
+        for (int i = 0; i < 20000; i++) {
             double xx = random.nextDouble();
             double yy = random.nextDouble();
             double zz = 2 - forward / 16;
