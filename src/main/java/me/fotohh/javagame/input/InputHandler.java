@@ -104,14 +104,14 @@ public class InputHandler implements KeyListener, FocusListener, MouseListener, 
         if (mouseX > screenX && mouseX < screenX + Display.WIDTH) {
             MouseX = mouseX - screenX;
         } else {
-            resetMouseLocation();
+            //resetMouseLocation();
             return;
         }
 
         if (mouseY > screenY && mouseY < screenY + Display.HEIGHT) {
             MouseY = mouseY - screenY;
         } else {
-            resetMouseLocation();
+            //resetMouseLocation();
         }
     }
 }

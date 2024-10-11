@@ -9,7 +9,7 @@ public class Render3D extends Render {
 
     public double[] zBuffer;
     private static final double RENDER_DISTANCE = 10000;
-    private Random random = new Random();
+
 
     public Render3D(int width, int height) {
         super(width, height);
@@ -54,20 +54,21 @@ public class Render3D extends Render {
                 double yy = z * cosine - depth * sine;
                 int xPix = (int) (xx + right);
                 int yPix = (int) (yy + forward);
-                zBuffer[x+y*width] = z;
+                zBuffer[x + y * width] = z;
 
                 if (z < 400) {
                     pixels[x + y * width] = Texture.floor.pixels[(xPix & 7) + (yPix & 7) * 8];
                 }
             }
         }
-        for(int i = 0; i < 10000; i++) {
+        Random random = new Random(100);
+        for (int i = 0; i < 10000; i++) {
             double xx = random.nextDouble();
             double yy = random.nextDouble();
-            double zz = random.nextDouble();
+            double zz = 2 - forward / 16;
 
-            int xPixel = (int) (xx / zz * height + width);
-            int yPixel = (int) (yy / zz * height + height);
+            int xPixel = (int) (xx / zz * ((double) height / 2) + ((double) width / 2));
+            int yPixel = (int) (yy / zz * ((double) height / 2) + ((double) height / 2));
             if (xPixel >= 0 && yPixel >= 0 && xPixel < width && yPixel < height) {
                 pixels[xPixel + yPixel * width] = 0xff00ff;
             }
