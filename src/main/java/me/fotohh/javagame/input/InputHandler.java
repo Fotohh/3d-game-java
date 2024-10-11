@@ -79,40 +79,39 @@ public class InputHandler implements KeyListener, FocusListener, MouseListener, 
 
     }
 
+    private void resetMouseLocation(){
+        if(hasFocus) {
+            int middleX = display.getLocationOnScreen().x + Display.WIDTH / 2;
+            int middleY = display.getLocationOnScreen().y + Display.HEIGHT / 2;
+            try {
+                Robot robot = new Robot();
+                robot.mouseMove(middleX, middleY);
+            } catch (AWTException ex) {
+                ex.printStackTrace();
+            }
+        }
+    }
+
     @Override
     public void mouseMoved(MouseEvent e) {
 
-        int middleX = Display.WIDTH / 2;
-        int middleY = Display.HEIGHT / 2;
+        int screenX = display.getLocationOnScreen().x;
+        int screenY = display.getLocationOnScreen().y;
 
-        //todo fix this code, it's not working properly
+        int mouseX = e.getXOnScreen();
+        int mouseY = e.getYOnScreen();
 
-        if(e.getX() > 0 && e.getX() < Display.WIDTH){
-            MouseX = e.getX();
-        }else{
-            if(hasFocus) {
-                MouseX = middleX;
-                try {
-                    Robot robot = new Robot();
-                    robot.mouseMove(display.getWindow().getLocationOnScreen().x + 50, display.getWindow().getLocationOnScreen().y + 50);
-                } catch (AWTException ex) {
-                    ex.printStackTrace();
-                }
-            }
+        if (mouseX > screenX && mouseX < screenX + Display.WIDTH) {
+            MouseX = mouseX - screenX;
+        } else {
+            resetMouseLocation();
+            return;
         }
-        if(e.getY() >  0 && e.getY() < Display.HEIGHT) {
-            MouseY = e.getY();
-        }else{
-            if(hasFocus) {
-                MouseY = middleY;
-                try {
-                    Robot robot = new Robot();
-                    robot.mouseMove(display.getWindow().getLocationOnScreen().x + 50, display.getWindow().getLocationOnScreen().y + 50);
 
-                } catch (AWTException ex) {
-                    ex.printStackTrace();
-                }
-            }
+        if (mouseY > screenY && mouseY < screenY + Display.HEIGHT) {
+            MouseY = mouseY - screenY;
+        } else {
+            resetMouseLocation();
         }
     }
 }

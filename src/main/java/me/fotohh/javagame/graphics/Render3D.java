@@ -3,10 +3,13 @@ package me.fotohh.javagame.graphics;
 import me.fotohh.javagame.display.Game;
 import me.fotohh.javagame.input.Controller;
 
+import java.util.Random;
+
 public class Render3D extends Render {
 
     public double[] zBuffer;
     private static final double RENDER_DISTANCE = 10000;
+    private Random random = new Random();
 
     public Render3D(int width, int height) {
         super(width, height);
@@ -58,8 +61,17 @@ public class Render3D extends Render {
                 }
             }
         }
+        for(int i = 0; i < 10000; i++) {
+            double xx = random.nextDouble();
+            double yy = random.nextDouble();
+            double zz = random.nextDouble();
 
-        pixels[width / 2 + height / 2 * width] = 0xff0000;
+            int xPixel = (int) (xx / zz * height + width);
+            int yPixel = (int) (yy / zz * height + height);
+            if (xPixel >= 0 && yPixel >= 0 && xPixel < width && yPixel < height) {
+                pixels[xPixel + yPixel * width] = 0xff00ff;
+            }
+        }
     }
 
     public void renderDistanceLimiter() {
