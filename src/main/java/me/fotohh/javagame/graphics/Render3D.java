@@ -78,7 +78,6 @@ public class Render3D extends Render {
         for (int i = 0; i < width * height; i++) {
             int color = pixels[i];
             int brightness = (int) (RENDER_DISTANCE / zBuffer[i]);
-
             brightness = Math.max(0, Math.min(255, brightness));
 
             int r = ((color >> 16) & 0xff) * brightness / 255;
