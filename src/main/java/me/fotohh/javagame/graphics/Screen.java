@@ -16,7 +16,9 @@ public class Screen extends Render{
             pixels[i] = 0;
         }
         render.floor();
+        render.renderWall(0, 0.5, 1.5, 1.5, 0);
         render.renderDistanceLimiter();
+
         draw(render, 0, 0);
     }
 }

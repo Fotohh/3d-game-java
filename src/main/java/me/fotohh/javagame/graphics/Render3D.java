@@ -6,16 +6,21 @@ import me.fotohh.javagame.input.Controller;
 public class Render3D extends Render {
 
     public double[] zBuffer;
+
     private final Game game;
 
     private static final double
             RENDER_DISTANCE = 10000,
-            BOBBING = 0.4,
+            BOBBING = 0.5,
             BOB_SPEED = 6.0,
             FLOOR_POSITION = 8.0,
             CEILING_POSITION = 800.0;
 
-    private double forward, right, rotation, cosine, sine, up, walking;
+    private double forward;
+    private double right;
+    private double cosine;
+    private double sine;
+    private double up;
 
     public Render3D(int width, int height, Game game) {
         super(width, height);
@@ -24,17 +29,17 @@ public class Render3D extends Render {
     }
 
     public void floor() {
-        double forward = game.controls.z;
-        double right = game.controls.x;
+        forward = game.controls.z;
+        right = game.controls.x;
         double rotation = game.controls.rotation;
-        double cosine = Math.cos(rotation);
-        double sine = Math.sin(rotation);
-        double up = game.controls.y;
+        cosine = Math.cos(rotation);
+        sine = Math.sin(rotation);
+        up = game.controls.y;
         double walking = 0;
 
         if (Controller.moving) {
-            double bobSpeed = BOBBING;
-            double bobbing = BOB_SPEED;
+            double bobSpeed = BOB_SPEED;
+            double bobbing = BOBBING;
 
             if (Controller.sprinting) {
                 bobSpeed *= 0.9;
@@ -68,8 +73,69 @@ public class Render3D extends Render {
         }
     }
 
-    public void renderWall(double xLeft, double xRight, double zDistance, double yHeight) {
-       // double xcLeft = ((xLeft) - right) * 2;
+    public void renderWall(double xLeft, double xRight, double zDistanceLeft, double zDistanceRight, double yHeight) {\
+
+        
+
+        double xcLeft = ((xLeft) - right) * 2;
+        double zcLeft = ((zDistanceLeft) - forward) * 2;
+
+        double rotLeftSideX = xcLeft * cosine - zcLeft * sine;
+        double yCornerTL = ((-yHeight) - (- up*0.0625)) * 2;
+        double yCornerBL = ((+0.5 - yHeight) - (- up * 0.0625)) * 2;
+        double rotLeftSideZ = zcLeft * cosine + xcLeft * sine;
+
+        double xcRight = ((xRight) - right) * 2;
+        double zcRight = ((zDistanceRight) - forward) * 2;
+
+        double rotRightSideX = xcRight * cosine - zcRight * sine;
+        double yCornerTR = ((-yHeight) - (- up*0.0625)) * 2;
+        double yCornerBR = ((+0.5 - yHeight) - (- up * 0.0625)) * 2;
+        double rotRightSideZ = zcRight * cosine + xcRight * sine;
+
+        double xPixelLeft = (rotLeftSideX / rotLeftSideZ * height + width / 2.0);
+        double xPixelRight = (rotRightSideX / rotRightSideZ * height + width / 2.0);
+
+        if (xPixelLeft >= xPixelRight) return;
+
+        int xPixelLeftInt = (int) xPixelLeft;
+        int xPixelRightInt = (int) xPixelRight;
+
+        if (xPixelLeftInt < 0) xPixelLeftInt = 0;
+        if (xPixelRightInt > width) xPixelRightInt = width;
+
+        double yPixelLeftTop = (yCornerTL / rotLeftSideZ * height + height / 2.0);
+        double yPixelLeftBottom = (yCornerBL / rotLeftSideZ * height + height / 2.0);
+        double yPixelRightTop = (yCornerTR / rotRightSideZ * height + height / 2.0);
+        double yPixelRightBottom = (yCornerBR / rotRightSideZ * height + height / 2.0);
+
+        double tex1 = 1 / rotLeftSideZ;
+        double tex2 = 1 / rotRightSideZ;
+        double tex3 = 0 / rotLeftSideZ;
+        double tex4 = 8 / rotRightSideZ - tex3;
+
+        for (int x = xPixelLeftInt; x < xPixelRightInt; x++) {
+            double pixelRotation = (x - xPixelLeft) / (xPixelRight - xPixelLeft);
+
+            int xTexture = (int) ((tex3 + tex4 * pixelRotation) / (tex1 + (tex2 - tex1) * pixelRotation));
+
+            double yPixelTop = yPixelLeftTop + (yPixelRightTop - yPixelLeftTop) * pixelRotation;
+            double yPixelBottom = yPixelLeftBottom + (yPixelRightBottom - yPixelLeftBottom) * pixelRotation;
+
+            int yPixelTopInt = (int) yPixelTop;
+            int yPixelBottomInt = (int) yPixelBottom;
+
+            if (yPixelTopInt < 0) yPixelTopInt = 0;
+            if (yPixelBottomInt > height) yPixelBottomInt = height;
+
+            for (int y = yPixelTopInt; y < yPixelBottomInt; y++) {
+                double pixelRotationY = (y - yPixelTop) / (yPixelBottom - yPixelTop);
+                int yTexture = (int) (8 * pixelRotationY);
+                pixels[x + y * width] = xTexture * 100 + yTexture * 100 * 256;
+                zBuffer[x + y * width] = 1/ (tex1 + (tex2 - tex1) * pixelRotation) * 8;
+            }
+        }
+
     }
 
     public void renderDistanceLimiter() {

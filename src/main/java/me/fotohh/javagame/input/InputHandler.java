@@ -71,7 +71,16 @@ public class InputHandler implements KeyListener, FocusListener, MouseListener, 
 
     @Override
     public void mouseExited(MouseEvent e) {
-
+        Robot robot;
+        try {
+            robot = new Robot();
+            if(Controller.turnLeft)
+                robot.mouseMove(display.getWindow().getX() + Display.WIDTH - 50, display.getWindow().getY() + Display.HEIGHT / 2);
+            if(Controller.turnRight)
+                robot.mouseMove(display.getWindow().getX() + 50, display.getWindow().getY() + Display.HEIGHT / 2);
+        } catch (AWTException e1) {
+            e1.printStackTrace();
+        }
     }
 
     @Override
