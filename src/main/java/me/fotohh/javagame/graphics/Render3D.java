@@ -21,6 +21,7 @@ public class Render3D extends Render {
     private double cosine;
     private double sine;
     private double up;
+    private double walking;
 
     public Render3D(int width, int height, Game game) {
         super(width, height);
@@ -35,7 +36,7 @@ public class Render3D extends Render {
         cosine = Math.cos(rotation);
         sine = Math.sin(rotation);
         up = game.controls.y;
-        double walking = 0;
+        walking = 0;
 
         if (Controller.moving) {
             double bobSpeed = BOB_SPEED;
@@ -76,23 +77,22 @@ public class Render3D extends Render {
     public void renderWall(double xLeft, double xRight, double zDistanceLeft, double zDistanceRight, double yHeight) {
 
         double upCorrect = 0.0625;
-        double rightCorrect = 0.0625;
-        double leftCorrect = 0.0625;
+        double walkCorrect = -0.0625;
 
         double xcLeft = ((xLeft) - (right)) * 2;
         double zcLeft = ((zDistanceLeft) - (forward)) * 2;
 
         double rotLeftSideX = xcLeft * cosine - zcLeft * sine;
-        double yCornerTL = ((-yHeight) - (-up * upCorrect)) * 2;
-        double yCornerBL = ((+0.5 - yHeight) - (-up * upCorrect)) * 2;
+        double yCornerTL = ((-yHeight) - (-up * upCorrect + (walking * walkCorrect))) * 2;
+        double yCornerBL = ((+0.5 - yHeight) - (-up * upCorrect + (walking * walkCorrect))) * 2;
         double rotLeftSideZ = zcLeft * cosine + xcLeft * sine;
 
         double xcRight = ((xRight) - right) * 2;
         double zcRight = ((zDistanceRight) - forward) * 2;
 
         double rotRightSideX = xcRight * cosine - zcRight * sine;
-        double yCornerTR = ((-yHeight) - (-up * upCorrect)) * 2;
-        double yCornerBR = ((+0.5 - yHeight) - (-up * upCorrect)) * 2;
+        double yCornerTR = ((-yHeight) - (-up * upCorrect + (walking * walkCorrect))) * 2;
+        double yCornerBR = ((+0.5 - yHeight) - (-up * upCorrect + (walking * walkCorrect))) * 2;
         double rotRightSideZ = zcRight * cosine + xcRight * sine;
 
         double xPixelLeft = (rotLeftSideX / rotLeftSideZ * height + width / 2.0);
