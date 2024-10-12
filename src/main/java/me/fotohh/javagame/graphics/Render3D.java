@@ -77,18 +77,20 @@ public class Render3D extends Render {
     public void renderWall(double xLeft, double xRight, double zDistanceLeft, double zDistanceRight, double yHeight) {
 
         double upCorrect = 0.0625;
-        double walkCorrect = -0.0625;
+        double forwardCorrect = 0.0625;
+        double rightCorrect = 0.062;
+        double walkCorrect = 0.0625;
 
-        double xcLeft = ((xLeft) - (right)) * 2;
-        double zcLeft = ((zDistanceLeft) - (forward)) * 2;
+        double xcLeft = ((xLeft) - (right * rightCorrect)) * 2;
+        double zcLeft = ((zDistanceLeft) - (forward * forwardCorrect)) * 2;
 
         double rotLeftSideX = xcLeft * cosine - zcLeft * sine;
         double yCornerTL = ((-yHeight) - (-up * upCorrect + (walking * walkCorrect))) * 2;
         double yCornerBL = ((+0.5 - yHeight) - (-up * upCorrect + (walking * walkCorrect))) * 2;
         double rotLeftSideZ = zcLeft * cosine + xcLeft * sine;
 
-        double xcRight = ((xRight) - right) * 2;
-        double zcRight = ((zDistanceRight) - forward) * 2;
+        double xcRight = ((xRight) - right * rightCorrect) * 2;
+        double zcRight = ((zDistanceRight) - forward * forwardCorrect) * 2;
 
         double rotRightSideX = xcRight * cosine - zcRight * sine;
         double yCornerTR = ((-yHeight) - (-up * upCorrect + (walking * walkCorrect))) * 2;
