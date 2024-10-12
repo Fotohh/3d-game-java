@@ -6,6 +6,7 @@ import me.fotohh.javagame.input.Controller;
 public class Render3D extends Render {
 
     public double[] zBuffer;
+    public double[] zBufferWall;
 
     private final Game game;
 
@@ -27,9 +28,15 @@ public class Render3D extends Render {
         super(width, height);
         this.game = game;
         zBuffer = new double[width * height];
+        zBufferWall = new double[width];
     }
 
     public void floor() {
+
+        for(int i = 0; i < width; i++){
+            zBufferWall[i] = 0;
+        }
+
         forward = game.controls.z;
         right = game.controls.x;
         double rotation = game.controls.rotation;
@@ -74,8 +81,9 @@ public class Render3D extends Render {
         }
     }
 
-    public void renderWall(double xLeft, double xRight, double zDistanceLeft, double zDistanceRight, double yHeight) {
+    private static final double CLIP_NEAR = 0.1;
 
+    public void renderWall(double xLeft, double xRight, double zDistanceLeft, double zDistanceRight, double yHeight) {
         double upCorrect = 0.0625;
         double forwardCorrect = 0.0625;
         double rightCorrect = 0.062;
@@ -97,6 +105,25 @@ public class Render3D extends Render {
         double yCornerBR = ((+0.5 - yHeight) - (-up * upCorrect + (walking * walkCorrect))) * 2;
         double rotRightSideZ = zcRight * cosine + xcRight * sine;
 
+        double tex30 = 0;
+        double tex40 = 8;
+
+        if (rotLeftSideZ < CLIP_NEAR && rotRightSideZ < CLIP_NEAR) return;
+
+        if (rotLeftSideZ < CLIP_NEAR) {
+            double clip0 = (CLIP_NEAR - rotLeftSideZ) / (rotRightSideZ - rotLeftSideZ);
+            rotLeftSideZ = rotLeftSideZ + (rotRightSideZ - rotLeftSideZ) * clip0;
+            rotLeftSideX = rotLeftSideX + (rotRightSideX - rotLeftSideX) * clip0;
+            tex30 = tex30 + (tex40 - tex30) * clip0;
+        }
+
+        if (rotRightSideZ < CLIP_NEAR) {
+            double clip0 = (CLIP_NEAR - rotRightSideZ) / (rotLeftSideZ - rotRightSideZ);
+            rotRightSideZ = rotRightSideZ + (rotLeftSideZ - rotRightSideZ) * clip0;
+            rotRightSideX = rotRightSideX + (rotLeftSideX - rotRightSideX) * clip0;
+            tex40 = tex30 + (tex40 - tex30) * clip0;
+        }
+
         double xPixelLeft = (rotLeftSideX / rotLeftSideZ * height + width / 2.0);
         double xPixelRight = (rotRightSideX / rotRightSideZ * height + width / 2.0);
 
@@ -115,13 +142,20 @@ public class Render3D extends Render {
 
         double tex1 = 1 / rotLeftSideZ;
         double tex2 = 1 / rotRightSideZ;
-        double tex3 = 0 / rotLeftSideZ;
-        double tex4 = 8 / rotRightSideZ - tex3;
+        double tex3 = tex30 / rotLeftSideZ;
+        double tex4 = tex40 / rotRightSideZ - tex3;
 
         for (int x = xPixelLeftInt; x < xPixelRightInt; x++) {
             double pixelRotation = (x - xPixelLeft) / (xPixelRight - xPixelLeft);
+            double zWall = tex1 + (tex2 - tex1) * pixelRotation;
 
-            int xTexture = (int) ((tex3 + tex4 * pixelRotation) / (tex1 + (tex2 - tex1) * pixelRotation));
+            if(zBufferWall[x] > zWall){
+                continue;
+            }
+
+            zBufferWall[x] = zWall;
+
+            int xTexture = (int) ((tex3 + tex4 * pixelRotation) / zWall);
 
             double yPixelTop = yPixelLeftTop + (yPixelRightTop - yPixelLeftTop) * pixelRotation;
             double yPixelBottom = yPixelLeftBottom + (yPixelRightBottom - yPixelLeftBottom) * pixelRotation;
@@ -139,7 +173,6 @@ public class Render3D extends Render {
                 zBuffer[x + y * width] = 1 / (tex1 + (tex2 - tex1) * pixelRotation) * 8;
             }
         }
-
     }
 
     public void renderDistanceLimiter() {
