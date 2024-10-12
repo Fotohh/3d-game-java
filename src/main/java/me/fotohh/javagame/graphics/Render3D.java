@@ -73,24 +73,26 @@ public class Render3D extends Render {
         }
     }
 
-    public void renderWall(double xLeft, double xRight, double zDistanceLeft, double zDistanceRight, double yHeight) {\
+    public void renderWall(double xLeft, double xRight, double zDistanceLeft, double zDistanceRight, double yHeight) {
 
-        
+        double upCorrect = 0.0625;
+        double rightCorrect = 0.0625;
+        double leftCorrect = 0.0625;
 
-        double xcLeft = ((xLeft) - right) * 2;
-        double zcLeft = ((zDistanceLeft) - forward) * 2;
+        double xcLeft = ((xLeft) - (right)) * 2;
+        double zcLeft = ((zDistanceLeft) - (forward)) * 2;
 
         double rotLeftSideX = xcLeft * cosine - zcLeft * sine;
-        double yCornerTL = ((-yHeight) - (- up*0.0625)) * 2;
-        double yCornerBL = ((+0.5 - yHeight) - (- up * 0.0625)) * 2;
+        double yCornerTL = ((-yHeight) - (-up * upCorrect)) * 2;
+        double yCornerBL = ((+0.5 - yHeight) - (-up * upCorrect)) * 2;
         double rotLeftSideZ = zcLeft * cosine + xcLeft * sine;
 
         double xcRight = ((xRight) - right) * 2;
         double zcRight = ((zDistanceRight) - forward) * 2;
 
         double rotRightSideX = xcRight * cosine - zcRight * sine;
-        double yCornerTR = ((-yHeight) - (- up*0.0625)) * 2;
-        double yCornerBR = ((+0.5 - yHeight) - (- up * 0.0625)) * 2;
+        double yCornerTR = ((-yHeight) - (-up * upCorrect)) * 2;
+        double yCornerBR = ((+0.5 - yHeight) - (-up * upCorrect)) * 2;
         double rotRightSideZ = zcRight * cosine + xcRight * sine;
 
         double xPixelLeft = (rotLeftSideX / rotLeftSideZ * height + width / 2.0);
@@ -132,7 +134,7 @@ public class Render3D extends Render {
                 double pixelRotationY = (y - yPixelTop) / (yPixelBottom - yPixelTop);
                 int yTexture = (int) (8 * pixelRotationY);
                 pixels[x + y * width] = xTexture * 100 + yTexture * 100 * 256;
-                zBuffer[x + y * width] = 1/ (tex1 + (tex2 - tex1) * pixelRotation) * 8;
+                zBuffer[x + y * width] = 1 / (tex1 + (tex2 - tex1) * pixelRotation) * 8;
             }
         }
 

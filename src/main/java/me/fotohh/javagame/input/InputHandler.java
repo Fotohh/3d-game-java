@@ -71,34 +71,11 @@ public class InputHandler implements KeyListener, FocusListener, MouseListener, 
 
     @Override
     public void mouseExited(MouseEvent e) {
-        Robot robot;
-        try {
-            robot = new Robot();
-            if(Controller.turnLeft)
-                robot.mouseMove(display.getWindow().getX() + Display.WIDTH - 50, display.getWindow().getY() + Display.HEIGHT / 2);
-            if(Controller.turnRight)
-                robot.mouseMove(display.getWindow().getX() + 50, display.getWindow().getY() + Display.HEIGHT / 2);
-        } catch (AWTException e1) {
-            e1.printStackTrace();
-        }
     }
 
     @Override
     public void mouseDragged(MouseEvent e) {
 
-    }
-
-    private void resetMouseLocation(){
-        if(hasFocus) {
-            int middleX = display.getLocationOnScreen().x + Display.WIDTH / 2;
-            int middleY = display.getLocationOnScreen().y + Display.HEIGHT / 2;
-            try {
-                Robot robot = new Robot();
-                robot.mouseMove(middleX, middleY);
-            } catch (AWTException ex) {
-                ex.printStackTrace();
-            }
-        }
     }
 
     @Override
@@ -112,15 +89,10 @@ public class InputHandler implements KeyListener, FocusListener, MouseListener, 
 
         if (mouseX > screenX && mouseX < screenX + Display.WIDTH) {
             MouseX = mouseX - screenX;
-        } else {
-            //resetMouseLocation();
-            return;
         }
 
         if (mouseY > screenY && mouseY < screenY + Display.HEIGHT) {
             MouseY = mouseY - screenY;
-        } else {
-            //resetMouseLocation();
         }
     }
 }
