@@ -21,7 +21,9 @@ public class Display extends Canvas implements Runnable{
     private static final long serialVersionUID = 1L;
 
     public static final int WIDTH = 800;
+    public static final int HALF_WIDTH = WIDTH / 2;
     public static final int HEIGHT = 600;
+    public static final int HALF_HEIGHT = HEIGHT / 2;
     public static final String title = "3D Game";
 
     private final Screen screen;
@@ -46,8 +48,8 @@ public class Display extends Canvas implements Runnable{
         setPreferredSize(size);
         setMaximumSize(size);
         setMinimumSize(size);
-        screen = new Screen(WIDTH, HEIGHT);
         game = new Game();
+        screen = new Screen(WIDTH, HEIGHT, game);
         img = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_RGB);
         pixels = ((DataBufferInt) img.getRaster().getDataBuffer()).getData();
 
@@ -161,7 +163,7 @@ public class Display extends Canvas implements Runnable{
             return;
         }
 
-        screen.render(game);
+        screen.render();
 
         System.arraycopy(screen.pixels, 0, pixels, 0, WIDTH * HEIGHT);
 

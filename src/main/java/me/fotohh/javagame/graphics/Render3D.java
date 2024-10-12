@@ -3,25 +3,25 @@ package me.fotohh.javagame.graphics;
 import me.fotohh.javagame.display.Game;
 import me.fotohh.javagame.input.Controller;
 
-import java.util.Random;
-
-import static me.fotohh.javagame.input.Controller.bobSpeed;
-import static me.fotohh.javagame.input.Controller.bobbing;
-
 public class Render3D extends Render {
 
     public double[] zBuffer;
+    private final Game game;
+
     private static final double RENDER_DISTANCE = 10000;
+    private final static double BOBBING = 0.4, BOB_SPEED = 6.0;
+
+    private static final double FLOOR_POSITION = 8.0, CEILING_POSITION = 800.0;
+    private double forward, right, rotation, cosine, sine, up, walking;
 
 
-    public Render3D(int width, int height) {
+    public Render3D(int width, int height, Game game) {
         super(width, height);
+        this.game = game;
         zBuffer = new double[width * height];
     }
 
-    public void floor(Game game) {
-        double floorPos = 8.0;
-        double ceilingPos = 800;
+    public void floor() {
         double forward = game.controls.z;
         double right = game.controls.x;
         double rotation = game.controls.rotation;
@@ -31,6 +31,8 @@ public class Render3D extends Render {
         double walking = 0;
 
         if (Controller.moving) {
+            double bobSpeed = BOBBING;
+            double bobbing = BOB_SPEED;
 
             if (Controller.sprinting) {
                 bobSpeed *= 0.9;
@@ -47,7 +49,7 @@ public class Render3D extends Render {
 
         for (int y = 0; y < height; y++) {
             double ceiling = (double) (y - halfHeight) / height;
-            double z = ceiling < 0 ? (ceilingPos - up + walking) / -ceiling : (floorPos + up - walking) / ceiling;
+            double z = ceiling < 0 ? (CEILING_POSITION - up + walking) / -ceiling : (FLOOR_POSITION + up - walking) / ceiling;
 
             for (int x = 0; x < width; x++) {
                 double depth = (double) (x - halfWidth) / height * z;
@@ -62,29 +64,10 @@ public class Render3D extends Render {
                 }
             }
         }
-        Random random = new Random(100);
-        for (int i = 0; i < 20000; i++) {
-            double xx = random.nextDouble() - 1;
-            double yy = random.nextDouble();
-            double zz = 2 - forward / 16;
+    }
 
-            int xPixel = (int) (xx / zz * ((double) height / 2) + ((double) width / 2));
-            int yPixel = (int) (yy / zz * ((double) height / 2) + ((double) height / 2));
-            if (xPixel >= 0 && yPixel >= 0 && xPixel < width && yPixel < height) {
-                pixels[xPixel + yPixel * width] = 0xff00ff;
-            }
-        }
-        for (int i = 0; i < 20000; i++) {
-            double xx = random.nextDouble();
-            double yy = random.nextDouble();
-            double zz = 2 - forward / 16;
-
-            int xPixel = (int) (xx / zz * ((double) height / 2) + ((double) width / 2));
-            int yPixel = (int) (yy / zz * ((double) height / 2) + ((double) height / 2));
-            if (xPixel >= 0 && yPixel >= 0 && xPixel < width && yPixel < height) {
-                pixels[xPixel + yPixel * width] = 0xff00ff;
-            }
-        }
+    public void renderWall(double xLeft, double xRight, double zDistance, double yHeight) {
+       // double xcLeft = ((xLeft) - right) * 2;
     }
 
     public void renderDistanceLimiter() {
