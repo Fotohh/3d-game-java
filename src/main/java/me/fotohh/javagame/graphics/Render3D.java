@@ -8,12 +8,14 @@ public class Render3D extends Render {
     public double[] zBuffer;
     private final Game game;
 
-    private static final double RENDER_DISTANCE = 10000;
-    private final static double BOBBING = 0.4, BOB_SPEED = 6.0;
+    private static final double
+            RENDER_DISTANCE = 10000,
+            BOBBING = 0.4,
+            BOB_SPEED = 6.0,
+            FLOOR_POSITION = 8.0,
+            CEILING_POSITION = 800.0;
 
-    private static final double FLOOR_POSITION = 8.0, CEILING_POSITION = 800.0;
     private double forward, right, rotation, cosine, sine, up, walking;
-
 
     public Render3D(int width, int height, Game game) {
         super(width, height);
